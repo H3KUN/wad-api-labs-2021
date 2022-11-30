@@ -18,7 +18,7 @@ const errHandler = (err, req, res, next) => {
     if(process.env.NODE_ENV === 'production') {
         return res.status(500).send(`Something went wrong!`);
     }
-    res.status(500).send(`Hey!! You caught the error 👍👍. Here's the details: ${err.stack} `);
+    res.status(500).send(`Hey!! You caught the error . Here's the details: ${err.stack} `);
 };
 app.use(passport.initialize());
 app.use(express.json());
