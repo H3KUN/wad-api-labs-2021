@@ -19,8 +19,15 @@ userRouter.post('/', asyncHandler(async (req, res) => {
         return next();
     }
     if (req.query.action === 'register') {
-        await User.create(req.body);
-        res.status(201).json({code: 201, msg: 'Successful created new user.'});
+        const regex = new RegExp(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/);
+        if (regex.test(req.body.password)) {
+            await User.create(req.body);
+            res.status(201).json({code: 201, msg: 'Successful created new user.'});
+        }else{
+            res.status(401).json({code:401,msg:'It is Bad Password.XD Passwords are at least 5 characters long and contain at least one number and one letter.'})
+        }
+
+
     } else {
         const user = await User.findByUserName(req.body.username);
         if (!user) return res.status(401).json({ code: 401, msg: 'Authentication failed. User not found.' });
@@ -55,7 +62,7 @@ userRouter.post('/:userName/favourites', asyncHandler(async (req, res) => {
     const user = await User.findByUserName(userName);
     await user.favourites.push(movie._id);
     await user.save();
-    res.status(201).json(user);
+    res.status(201).json(user.favourite);
 }));
 userRouter.get('/:userName/favourites', asyncHandler( async (req, res) => {
     const userName = req.params.userName;
