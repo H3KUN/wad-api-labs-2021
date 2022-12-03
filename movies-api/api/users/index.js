@@ -58,9 +58,16 @@ userRouter.put('/:id', async (req, res) => {
 userRouter.post('/:userName/favourites', asyncHandler(async (req, res) => {
     const newFavourite = req.body.id;
     const userName = req.params.userName;
-    const movie = await movieModel.findByMovieDBId(newFavourite);
     const user = await User.findByUserName(userName);
-    await user.favourites.push(movie._id);
+    await user.favourites.add(newFavourite);
+    await user.save();
+    res.status(201).json(user.favourite);
+}));
+userRouter.post('/:userName/favourites/delete', asyncHandler(async (req, res) => {
+    const newFavourite = req.body.id;
+    const userName = req.params.userName;
+    const user = await User.findByUserName(userName);
+    await user.favourites.delete(newFavourite);
     await user.save();
     res.status(201).json(user.favourite);
 }));
@@ -68,5 +75,18 @@ userRouter.get('/:userName/favourites', asyncHandler( async (req, res) => {
     const userName = req.params.userName;
     const user = await User.findByUserName(userName).populate('favourites');
     res.status(200).json(user.favourites);
+}));
+userRouter.post('/:userName/reviews', asyncHandler(async (req, res) => {
+    const newReview = req.body.id;
+    const userName = req.params.userName;
+    const user = await User.findByUserName(userName);
+    await user.reviews.add(newReview);
+    await user.save();
+    res.status(201).json(user.reviews);
+}));
+userRouter.get('/:userName/reviews', asyncHandler( async (req, res) => {
+    const userName = req.params.userName;
+    const user = await User.findByUserName(userName).populate('reviews');
+    res.status(200).json(user.reviews);
 }));
 export default userRouter;
